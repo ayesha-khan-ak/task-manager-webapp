@@ -1,0 +1,41 @@
+name: Documentation Deployment
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - 'docs/**'    # Only trigger when files in the docs folder are updated
+  workflow_dispatch:  # Allows manual deployment
+
+jobs:
+  deploy-docs:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Step 3: Install dependencies (if docs require a build tool)
+      - name: Install dependencies
+        run: npm install
+
+      # Step 4: Build documentation
+      - name: Build docs
+        run: |
+          echo "Building documentation..."
+          mkdir -p docs-build
+          cp -r docs/* docs-build/  # Example: simple copy, replace with mkdocs/sphinx if needed
+
+      # Step 5: Deploy to GitHub Pages
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./docs-build
