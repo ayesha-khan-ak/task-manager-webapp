@@ -1,0 +1,31 @@
+name: Scheduled Tasks
+
+# Run on a schedule (daily at 2:00 AM UTC)
+on:
+  schedule:
+    - cron: '0 2 * * *'  # Every day at 2:00 AM UTC
+  workflow_dispatch:      # Allows manual triggering
+
+jobs:
+  maintenance:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Checkout repository
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      # Step 2: Setup Node.js (if tasks require Node.js)
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      # Step 3: Run maintenance script
+      - name: Run maintenance script
+        run: |
+          echo "Starting scheduled maintenance tasks..."
+          # Example task: clean temp files or logs
+          mkdir -p logs
+          echo "Maintenance run at $(date)" >> logs/maintenance.log
+          echo "Scheduled tasks completed."
