@@ -1,0 +1,12 @@
+version: 2
+updates:
+  # npm (Node.js) dependencies
+  - package-ecosystem: "npm"
+    directory: "/"                # Location of package.json
+    schedule:
+      interval: "weekly"          # Check updates once a week
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+    reviewers:
+      - ayesha-khan-ak            # Your GitHub username
