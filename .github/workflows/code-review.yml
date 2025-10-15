@@ -1,0 +1,36 @@
+name: Code Review Workflow
+
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  code-quality-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: npm install
+
+      # Step 1: Linting for code style
+      - name: Run ESLint
+        run: npm run lint
+
+      # Step 2: Security scanning
+      - name: Run npm audit for vulnerabilities
+        run: npm audit --audit-level=moderate || true
+
+      # Step 3: Code quality analysis (optional)
+      - name: Analyze code metrics
+        run: |
+          echo "Analyzing code complexity..."
+          npx eslint . --max-warnings=0
+          echo "Code review checks completed successfully."
