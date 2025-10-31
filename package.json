@@ -1,0 +1,22 @@
+{
+  "name": "task-manager-webapp",
+  "version": "1.0.0",
+  "description": "A web application for managing tasks and projects, created as part of SCD Assignment 2 to demonstrate GitHub Actions workflows for Continuous Integration, Deployment, and Automation.",
+  "main": "index.js",
+  "scripts": {
+  "lint": "eslint .",
+  "test": "jest",
+  "build": "echo 'Build step placeholder'"
+},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ayesha-khan-ak/task-manager-webapp.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ayesha-khan-ak/task-manager-webapp/issues"
+  },
+  "homepage": "https://github.com/ayesha-khan-ak/task-manager-webapp#readme"
+}
