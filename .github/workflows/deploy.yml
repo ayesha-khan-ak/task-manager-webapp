@@ -6,80 +6,31 @@ on:
   workflow_dispatch:
 
 jobs:
-  build-test-deploy:
+  build-and-deploy:
     runs-on: ubuntu-latest
-    permissions:
-      contents: write
 
     steps:
-    # Step 1: Checkout repository
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: Checkout code
+        uses: actions/checkout@v4
 
-    # Step 2: Detect project type and setup
-    - name: Detect project type
-      id: detect
-      run: |
-        if [ -f "package.json" ]; then
-          echo "PROJECT_TYPE=nodejs" >> $GITHUB_OUTPUT
-        elif [ -f "requirements.txt" ]; then
-          echo "PROJECT_TYPE=python" >> $GITHUB_OUTPUT
-        elif [ -f "pom.xml" ]; then
-          echo "PROJECT_TYPE=java" >> $GITHUB_OUTPUT
-        else
-          echo "PROJECT_TYPE=static" >> $GITHUB_OUTPUT
-        fi
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-    # Step 3: Setup based on project type
-    - name: Setup Node.js
-      if: steps.detect.outputs.PROJECT_TYPE == 'nodejs'
-      uses: actions/setup-node@v4
-      with:
-        node-version: '18'
+      - name: Install dependencies
+        run: npm install
 
-    - name: Install dependencies
-      if: steps.detect.outputs.PROJECT_TYPE == 'nodejs'
-      run: npm install
+      - name: Build project
+        run: |
+          if [ -f package.json ]; then
+            npm run build || echo "No build script found"
+          else
+            echo "No package.json found, skipping build"
+          fi
 
-    # Step 4: Build simulation
-    - name: Build project
-      run: |
-        echo "Building project type: ${{ steps.detect.outputs.PROJECT_TYPE }}"
-        mkdir -p dist
-        # Create a simple demo deployment
-        cat > dist/index.html << EOF
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Deployment Success</title>
-            <style>
-                body { font-family: Arial, sans-serif; margin: 40px; }
-                .success { color: green; font-size: 24px; }
-            </style>
-        </head>
-        <body>
-            <div class="success">✅ Deployment Successful!</div>
-            <h1>Heavens Above - Task Manager</h1>
-            <p>Project Type: ${{ steps.detect.outputs.PROJECT_TYPE }}</p>
-            <p>Deployed via GitHub Actions on $(date)</p>
-            <p>Workflow: ${{ github.workflow }}</p>
-            <p>Commit: ${{ github.sha }}</p>
-        </body>
-        </html>
-        EOF
-        echo "Build completed successfully!"
-
-    # Step 5: Deploy to GitHub Pages
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./dist
-        force_orphan: true
-
-    # Step 6: Final success
-    - name: Deployment Complete
-      run: |
-        echo "🎉 Deployment pipeline completed successfully!"
-        echo "Project type: ${{ steps.detect.outputs.PROJECT_TYPE }}"
-        echo "Artifacts deployed to GitHub Pages"
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v4
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./public
